@@ -3873,7 +3873,14 @@ network.</p>
 <li>
 <p>vSphere Credentials</p>
 <p>To enable k0rdent to access vSphere resources, create the appropriate credentials objects. For a full explanation of how <code>Credential</code> objects work, see the <a href="../../../access/credentials/">main Credentials chapter</a>, but for now, follow these steps:</p>
-<p>Create a <code>Secret</code> object with the username and password</p>
+<p>Create a <code>Secret</code> object with the username and password.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>
+The <code>username</code> parameter should be set to the vCenter username along with the domain name.
+For example, <code>userName@domainName</code>. If you don't specify the domain name for active directory users,
+the vSphere Container Storage Plug-in will not function properly.</p>
+</div>
 <p>The <code>Secret</code> stores the username and password for your vSphere instance. Save the <code>Secret</code> YAML in a file named <code>vsphere-cluster-identity-secret.yaml</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
 <span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Secret</span>
