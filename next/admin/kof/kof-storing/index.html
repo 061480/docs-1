@@ -4187,7 +4187,7 @@ helm<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </
 <span class="s">            cluster: mothership</span>
 <span class="s">            clusterNamespace: kcm-system</span>
 <span class="s">        otlphttp/logs:</span>
-<span class="s">          logs_endpoint: https://vmauth.$REGIONAL_DOMAIN/vls/insert/opentelemetry/v1/logs</span>
+<span class="s">          logs_endpoint: https://vmauth.$REGIONAL_DOMAIN/vli/insert/opentelemetry/v1/logs</span>
 <span class="s">          auth:</span>
 <span class="s">            authenticator: basicauth/logs</span>
 <span class="s">        otlphttp/traces:</span>
@@ -4251,7 +4251,7 @@ helm<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </
 <span class="s">            cluster: mothership</span>
 <span class="s">            clusterNamespace: kcm-system</span>
 <span class="s">        otlphttp/logs:</span>
-<span class="s">          logs_endpoint: http://$REGIONAL_CLUSTER_NAME-logs:9428/insert/opentelemetry/v1/logs</span>
+<span class="s">          logs_endpoint: http://$REGIONAL_CLUSTER_NAME-logs-insert:9481/insert/opentelemetry/v1/logs</span>
 <span class="s">        otlphttp/traces:</span>
 <span class="s">          endpoint: http://$REGIONAL_CLUSTER_NAME-jaeger-collector:4318</span>
 <span class="s">opencost:</span>
