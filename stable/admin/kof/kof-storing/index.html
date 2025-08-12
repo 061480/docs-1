@@ -4083,7 +4083,9 @@ No additional steps are required here.</p>
 </li>
 <li>
 <p>Create the <code>collectors-values.yaml</code> file:
-    <div class="highlight"><pre><span></span><code><span class="nt">opentelemetry-kube-stack</span><span class="p">:</span>
+    <div class="highlight"><pre><span></span><code><span class="nt">kcm</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">monitoring</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">opentelemetry-kube-stack</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">clusterName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mothership</span>
 <span class="w">  </span><span class="nt">defaultCRConfig</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">config</span><span class="p">:</span>
@@ -4127,6 +4129,8 @@ helm<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </
 <li>
 <p>Create the <code>collectors-values.yaml</code> file:
     <div class="highlight"><pre><span></span><code>cat<span class="w"> </span>&gt;collectors-values.yaml<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<span class="s">kcm:</span>
+<span class="s">  monitoring: true</span>
 <span class="s">opentelemetry-kube-stack:</span>
 <span class="s">  clusterName: mothership</span>
 <span class="s">  defaultCRConfig:</span>
@@ -4141,6 +4145,16 @@ helm<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </
 <span class="s">          secretKeyRef:</span>
 <span class="s">            key: password</span>
 <span class="s">            name: storage-vmuser-credentials</span>
+<span class="s">      - name: KOF_JAEGER_USER</span>
+<span class="s">        valueFrom:</span>
+<span class="s">          secretKeyRef:</span>
+<span class="s">            key: username</span>
+<span class="s">            name: jaeger-credentials</span>
+<span class="s">      - name: KOF_JAEGER_PASSWORD</span>
+<span class="s">        valueFrom:</span>
+<span class="s">          secretKeyRef:</span>
+<span class="s">            key: password</span>
+<span class="s">            name: jaeger-credentials</span>
 <span class="s">    config:</span>
 <span class="s">      processors:</span>
 <span class="s">        resource/k8sclustername:</span>
@@ -4159,7 +4173,11 @@ helm<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </
 <span class="s">        basicauth/logs:</span>
 <span class="s">          client_auth:</span>
 <span class="s">            username: ${env:KOF_VM_USER}</span>
-<span class="s">            password: ${env:KOF_VM_PASSWORD}                  </span>
+<span class="s">            password: ${env:KOF_VM_PASSWORD}</span>
+<span class="s">        basicauth/traces:</span>
+<span class="s">          client_auth:</span>
+<span class="s">            username: ${env:KOF_JAEGER_USER}</span>
+<span class="s">            password: ${env:KOF_JAEGER_PASSWORD}</span>
 <span class="s">      exporters:</span>
 <span class="s">        prometheusremotewrite:</span>
 <span class="s">          endpoint: https://vmauth.$REGIONAL_DOMAIN/vm/insert/0/prometheus/api/v1/write</span>
@@ -4174,10 +4192,13 @@ helm<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </
 <span class="s">            authenticator: basicauth/logs  </span>
 <span class="s">        otlphttp/traces:</span>
 <span class="s">          endpoint: https://jaeger.$REGIONAL_DOMAIN/collector</span>
+<span class="s">          auth:</span>
+<span class="s">            authenticator: basicauth/traces</span>
 <span class="s">      service:</span>
 <span class="s">        extensions:</span>
 <span class="s">          - basicauth/metrics</span>
-<span class="s">          - basicauth/logs              </span>
+<span class="s">          - basicauth/logs</span>
+<span class="s">          - basicauth/traces</span>
 <span class="s">opencost:</span>
 <span class="s">  opencost:</span>
 <span class="s">    prometheus:</span>
@@ -4206,6 +4227,8 @@ helm<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </
 <li>
 <p>Create the <code>collectors-values.yaml</code> file:
     <div class="highlight"><pre><span></span><code>cat<span class="w"> </span>&gt;collectors-values.yaml<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<span class="s">kcm:</span>
+<span class="s">  monitoring: true</span>
 <span class="s">kof:</span>
 <span class="s">  basic_auth: false</span>
 <span class="s">opentelemetry-kube-stack:</span>
@@ -4274,6 +4297,8 @@ AWS_SECRET_ACCESS_KEY=REDACTED
 <li>
 <p>Create the <code>collectors-values.yaml</code> file:
     <div class="highlight"><pre><span></span><code>cat<span class="w"> </span>&gt;collectors-values.yaml<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<span class="s">kcm:</span>
+<span class="s">  monitoring: true</span>
 <span class="s">opentelemetry-kube-stack:</span>
 <span class="s">  clusterName: mothership</span>
 <span class="s">  defaultCRConfig:</span>
