@@ -4159,7 +4159,7 @@ please apply this advanced guide: <a href="https://github.com/k0rdent/kof/blob/m
 <li>
 <p>Get the regional Jaeger username and password:
     <div class="highlight"><pre><span></span><code><span class="nv">KUBECONFIG</span><span class="o">=</span>regional-kubeconfig<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>secret<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-n<span class="w"> </span>kof<span class="w"> </span>jaeger-credentials<span class="w"> </span>-o<span class="w"> </span>yaml<span class="w"> </span><span class="p">|</span><span class="w"> </span>yq<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="w">  </span>-n<span class="w"> </span>kof<span class="w"> </span>jaeger-admin-credentials<span class="w"> </span>-o<span class="w"> </span>yaml<span class="w"> </span><span class="p">|</span><span class="w"> </span>yq<span class="w"> </span><span class="s1">&#39;{</span>
 <span class="s1">  &quot;user&quot;: .data.username | @base64d,</span>
 <span class="s1">  &quot;pass&quot;: .data.password | @base64d</span>
 <span class="s1">}&#39;</span>
