@@ -3954,6 +3954,65 @@ StatefulSet. The secret with the registry CA should already be present in your s
 <span class="s1">    }</span>
 <span class="s1">  ]&#39;</span>
 </code></pre></div>
+<h1 id="kcm-installation-fails-with-custom-registry-using-redirects-tls-certificate-mismatch">KCM Installation Fails with Custom Registry Using Redirects: TLS Certificate Mismatch<a class="headerlink" href="#kcm-installation-fails-with-custom-registry-using-redirects-tls-certificate-mismatch" title="Permanent link">#</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>
+This issue is automatically handled starting from K0rdent v1.3.0.</p>
+</div>
+<p>When installing KCM with a custom registry that uses a custom CA and supports redirects, installation may fail due to
+a known Flux bug: <a href="https://github.com/fluxcd/flux2/issues/5477">certSecretRef does not handle redirects</a>.</p>
+<p>The error typically looks like:</p>
+<div class="highlight"><pre><span></span><code>x509:<span class="w"> </span>certificate<span class="w"> </span>is<span class="w"> </span>valid<span class="w"> </span><span class="k">for</span><span class="w"> </span>a,<span class="w"> </span>not<span class="w"> </span>b
+</code></pre></div>
+<p><strong>Workaround</strong></p>
+<p>Until K0rdent v1.3.0 (or if you cannot upgrade), you can apply the following steps manually:</p>
+<ol>
+<li>Mount the Registry CA Certificate into Flux Source Controller</li>
+</ol>
+<p>Ensure the secret with your registry CA is present in the system namespace (<code>kcm-system</code> by default), as configured
+by the <code>registryCertSecret</code> parameter. Then patch the <code>source-controller</code> Deployment:</p>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>patch<span class="w"> </span>deployment<span class="w"> </span>source-controller<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-n<span class="w"> </span>kcm-system<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--type<span class="o">=</span><span class="s1">&#39;json&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-p<span class="o">=</span><span class="s1">&#39;[</span>
+<span class="s1">    {</span>
+<span class="s1">      &quot;op&quot;: &quot;add&quot;,</span>
+<span class="s1">      &quot;path&quot;: &quot;/spec/template/spec/volumes/-&quot;,</span>
+<span class="s1">      &quot;value&quot;: {</span>
+<span class="s1">        &quot;name&quot;: &quot;registry-ca&quot;,</span>
+<span class="s1">        &quot;secret&quot;: {</span>
+<span class="s1">          &quot;secretName&quot;: &quot;&lt;REGISTRY_SECRET_NAME&gt;&quot;,</span>
+<span class="s1">          &quot;items&quot;: [</span>
+<span class="s1">            {</span>
+<span class="s1">              &quot;key&quot;: &quot;ca.crt&quot;,</span>
+<span class="s1">              &quot;path&quot;: &quot;registry-ca.pem&quot;</span>
+<span class="s1">            }</span>
+<span class="s1">          ]</span>
+<span class="s1">        }</span>
+<span class="s1">      }</span>
+<span class="s1">    },</span>
+<span class="s1">    {</span>
+<span class="s1">      &quot;op&quot;: &quot;add&quot;,</span>
+<span class="s1">      &quot;path&quot;: &quot;/spec/template/spec/containers/0/volumeMounts/-&quot;,</span>
+<span class="s1">      &quot;value&quot;: {</span>
+<span class="s1">        &quot;name&quot;: &quot;registry-ca&quot;,</span>
+<span class="s1">        &quot;mountPath&quot;: &quot;/etc/ssl/certs/registry-ca.pem&quot;,</span>
+<span class="s1">        &quot;subPath&quot;: &quot;registry-ca.pem&quot;,</span>
+<span class="s1">        &quot;readOnly&quot;: true</span>
+<span class="s1">      }</span>
+<span class="s1">    }</span>
+<span class="s1">  ]&#39;</span>
+</code></pre></div>
+<ol>
+<li>Remove <code>certSecretRef</code> from the HelmRepository</li>
+</ol>
+<p>Patch the <code>kcm-templates</code> HelmRepository to remove the <code>certSecretRef</code> field:</p>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>patch<span class="w"> </span>helmrepository<span class="w"> </span>kcm-templates<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-n<span class="w"> </span>kcm-system<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--type<span class="o">=</span>json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-p<span class="o">=</span><span class="s1">&#39;[{&quot;op&quot;: &quot;remove&quot;, &quot;path&quot;: &quot;/spec/certSecretRef&quot;}]&#39;</span>
+</code></pre></div>
 
 
 
